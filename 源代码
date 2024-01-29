@@ -1,0 +1,97 @@
+#include <stdio.h>
+int printMonth(int MonthDay[], int month, int year)
+{
+    printf("一 二 三 四 五 六 日\n");
+    int cday = 1; // cday为起始
+    // 计算当前月之前的天数，不包括当前月的天数
+    for (int i = 0; i < month - 1;i++)
+    //从起始月开始+到当前月份的前一个月份 
+	{
+        cday += MonthDay[i];
+    }
+
+    int WeekDay = (cday - 1 + (year - 1) * 365 + (year - 1) / 4 - (year - 1) / 100 + (year - 1) / 400) % 7; //ZC
+//WeekDay计算包括了对年份的考虑，确保每年的1月1日对应正确的
+//使用了Zeller's Congruence（蔡勒公式）计算年份和月份的第一天星期几
+    for (int i = 0; i < WeekDay; i++)  // 第一天前面的空格
+        printf("   ");
+    for (int i = 1; i <= MonthDay[month -1]; i++)
+	{   // 打印月份的天数
+        printf("%2d ", i);
+        if ((i + WeekDay) % 7 == 0)
+            printf("\n");
+    }
+}
+
+int main() {
+    int year, month, c;
+    while (1) {
+        printf("请输入年份:");
+        int ret;
+        ret = scanf("%d", &year);
+        while(getchar() != '\n'); // 清空输入缓存区，不要字符型
+        if (ret == 1 && year >= 1) 
+		{
+            break;
+        } 
+		else 
+		{
+            printf("输入年份错误,请重新输入: \n");
+        }
+		}
+    
+    int MonthDay[12] = {31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31};
+    int run = ((year % 4 == 0) && (year % 100 != 0)) || (year % 400 == 0);
+    if (run)
+        MonthDay[1] = 29;
+//    通过if语句判断是否要修改2月天数，条件成立，2月改为29天
+
+    int choice;
+    do {
+        printf("请选择输出月历还是年历（输入1为月历，输入2为年历）:");
+ 
+        if (scanf("%d", &choice) != 1 || (choice != 1 && choice != 2)) {
+            printf("输入错误，请重新输入1或2.\n");
+            while(getchar() != '\n'); // 清空输入缓冲区
+        }
+    } while (choice != 1 && choice != 2);
+    if (choice == 1) {
+        do {
+            printf("请输入月份:");
+            if (scanf("%d", &month) != 1 || month < 1 || month > 12) {
+                printf("输入月份错误,请重新输入 \n");
+                while ((getchar()) != '\n');
+            }
+        } while (month < 1 || month > 12);
+
+        printf("\n%d 月\n", month);
+        printMonth(MonthDay, month, year);
+
+        do {
+            printf("\n 是否继续输出年历？继续请输入1，退出请输入2：");
+            if (scanf("%d", &choice) != 1 || (choice != 1 && choice != 2)) {
+                printf("输入错误，请重新输入1或2.\n");
+                while(getchar() != '\n'); // 清空输入缓冲区
+            }
+        } while (choice != 1 && choice != 2);
+
+        if (choice == 1) {
+            for (month = 1; month <= 12; month++) 
+		    {
+                printf("\n\n%d 月\n", month);
+                printMonth(MonthDay, month, year);
+            }
+        }
+    } else if (choice == 2)
+	{
+        for (month = 1; month <= 12; month++) 
+		{
+            printf("\n\n%d 月\n", month);
+            printMonth(MonthDay, month, year);
+        }
+    } 
+	else{
+        printf("输入错误，请重新输入1或2.\n");
+    	}	
+    return 0;
+}
